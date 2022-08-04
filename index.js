@@ -2,6 +2,7 @@ const express = require("express")
 const morgan = require("morgan")
 const cors = require("cors")
 let contacts = require("./data/contacts.js")
+const meetings = require("./data/meetings")
 
 const app = express()
 
@@ -29,7 +30,8 @@ app.get("/contacts/:id", (req, res) => {
     console.log(`got request for '/contacts/${reqID}'`)
     const contact = contacts.find(person => Number(person.id) === Number(reqID))
     res.send({
-        "contact": contact
+        "contact": contact,
+        "meetings": meetings.filter(m => m.contactId === Number(reqID))
     })
 })
 
@@ -39,11 +41,11 @@ app.post("/contacts", (req, res) => {
     const newContact = {
         "id": contacts.length + 1,
         ...newContactInfo,
-        "meetings": []
     }
     contacts.push(newContact)
     res.send({
-        "contact": newContact
+        "contact": newContact,
+        "meetings": []
     })
 })
 
@@ -70,7 +72,8 @@ app.put("/contacts/:id", (req, res) => {
         } else return (person)
     })
     res.send({
-        "contact": updatedContact
+        "contact": updatedContact,
+        "meetings": meetings.filter(m => m.contactId === Number(reqID))
     })
 })
 
